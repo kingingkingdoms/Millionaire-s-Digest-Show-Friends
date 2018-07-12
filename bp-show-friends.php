@@ -1,18 +1,10 @@
 <?php
 /*
-Plugin Name: BP Show Friends
-Plugin URI: http://imathi.eu/tag/bp-show-friends/
-Description: Displays the friends of the logged in user or of the displayed user once in BuddyPress Member area
-Version: 2.0
-Requires at least: 3.7
-Tested up to: 3.8
-License: GNU/GPL 2
-Author: imath
-Author URI: http://imathi.eu/
-Text Domain:       bp-show-friends
-License:           GPL-2.0+
-License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
-Domain Path:       /languages/
+Plugin Name: Millionaire's Digest Show Friends Widget
+Description: Display the friends of the displayed user as a widget with filters.
+Version: 1.0.0
+Author: K&L (Founder of the Millionaire's Digest)
+Author URI: https://millionairedigest.com/
 */
 
 // Exit if accessed directly
@@ -203,7 +195,7 @@ class BP_Show_Friends_Widget extends WP_Widget{
 	 */
 	public function setup_widget() {
 		$widget_ops = array( 'classname' => 'widget_show_friends', 'description' => __( 'Show the friends of the loggedin user or of the displayed user if in the member area', 'bp-show-friends' ) );
-		parent::__construct( false, _x( 'BP Show Friends', 'widget name', 'bp-show-friends' ), $widget_ops );
+		parent::__construct( false, _x( 'Millionaire\'s Digest Show Friends', 'widget name', 'bp-show-friends' ), $widget_ops );
 	}
 
 	/**
@@ -234,9 +226,7 @@ class BP_Show_Friends_Widget extends WP_Widget{
 
 		$instance['per_page'] = !empty( $instance['per_page'] ) ? $instance['per_page'] : 5;
 		$instance['size'] = !empty( $instance['size'] ) ? $instance['size'] : 50;
-
-		$user_all_friends_url = trailingslashit( bp_core_get_user_domain( $user_id ) . bp_get_friends_slug() );
-		$user_name = bp_core_get_user_displayname( $user_id );
+		$name = bp_get_user_firstname( bp_get_displayed_user_fullname() );
 		?>
 
 		<?php if( bp_is_user() || is_user_logged_in() ):
@@ -245,15 +235,15 @@ class BP_Show_Friends_Widget extends WP_Widget{
 			echo $before_title;
 
 			if( bp_is_my_profile() ) 
-				printf( __( 'My Friends - <a href="%1$s">All (%2$s)</a>', 'bp-show-friends' ), $user_all_friends_url, friends_get_total_friend_count( $user_id ) );
+				printf( __( 'My Friends', 'bp-show-friends' ) );
 			else 
-				printf( __( '%1$s&apos;s Friends - <a href="%2$s">All (%3$s)</a>', 'bp-show-friends' ), $user_name, $user_all_friends_url, friends_get_total_friend_count( $user_id ) );
+				printf( __( '%1$s&apos;s Friends', 'bp-show-friends' ), $name );
 		    
 		    echo $after_title; ?>
 
 			<div class="item-options bpsf-list-options">
-				<a href="#" class="bp-show-friends-action current"  data-type="active" data-number="<?php echo intval( $this->number ) ;?>"><?php _e('Recently Actives','bp-show-friends');?></a>&nbsp;|&nbsp;
-				<a href="#" class="bp-show-friends-action"  data-type="online" data-number="<?php echo intval( $this->number ) ;?>"><?php _e('Online Friends','bp-show-friends');?></a>
+				<a href="#" class="bp-show-friends-action current"  data-type="active" data-number="<?php echo intval( $this->number ) ;?>"><?php _e('Active','bp-show-friends');?></a>&nbsp;|&nbsp;
+				<a href="#" class="bp-show-friends-action"  data-type="online" data-number="<?php echo intval( $this->number ) ;?>"><?php _e('Online','bp-show-friends');?></a>
 			</div>
 
 			<?php $this->list_friends( $instance['per_page'], $instance['size'] );
