@@ -10,7 +10,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 == Description ==
 
-Display the friends of the displayed user as a widget with filters made by the Founder & CEO of the Millionaire's Digest with the thanks of imath for the original plugin.
+Display the friends of the displayed user as a widget with filters made by the Founder & CEO of the Millionaire's Digest, and with special thanks and all credits going to imath for the original plugin.
 
 == Installation ==
 
