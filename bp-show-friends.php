@@ -237,12 +237,13 @@ class BP_Show_Friends_Widget extends WP_Widget{
 			if( bp_is_my_profile() ) 
 				printf( __( 'My Friends', 'bp-show-friends' ) );
 			else 
-				printf( __( '%1$s&apos;s Friends', 'bp-show-friends' ), $name );
+				printf( __( 'My Friends', 'bp-show-friends' ), $name );
 		    
 		    echo $after_title; ?>
 
 			<div class="item-options bpsf-list-options">
 				<a href="#" class="bp-show-friends-action current"  data-type="active" data-number="<?php echo intval( $this->number ) ;?>"><?php _e('Active','bp-show-friends');?></a>&nbsp;|&nbsp;
+				<a href="#" class="bp-show-friends-action"  data-type="newest" data-number="<?php echo intval( $this->number ) ;?>"><?php _e('New','bp-show-friends');?></a>&nbsp;|&nbsp;
 				<a href="#" class="bp-show-friends-action"  data-type="online" data-number="<?php echo intval( $this->number ) ;?>"><?php _e('Online','bp-show-friends');?></a>
 			</div>
 
@@ -265,7 +266,7 @@ class BP_Show_Friends_Widget extends WP_Widget{
 	 * @uses the Members loop
 	 */
 	public function list_friends( $limit = 0, $size = 0 ) {
-		$user_id = bp_is_user() ? bp_displayed_user_id() : bp_loggedin_user_id() ;
+		$user_id = bp_is_user() ? bp_displayed_user_id() : bp_loggedin_user_id();
 
 		if( empty( $limit ) || empty( $size ) ) {
 			$widget_settings = $this->get_settings();
@@ -285,13 +286,20 @@ class BP_Show_Friends_Widget extends WP_Widget{
 			)
 		);
 
-		$fallback_message = '<p>'.__('No friends!','bp-show-friends').'</p>';
+		$fallback_message = '<p>'.__('No friends to show yet.','bp-show-friends').'</p>';
+		
+		if( !empty( $_POST['bpsf_type'] ) ) {
+			$args['type'] = $_POST['bpsf_type'];
+
+			if( 'newest' == $args['type'] )
+				$fallback_message = '<p>'.__('No new friends to show yet.','bp-show-friends').'</p>';
+		}
 
 		if( !empty( $_POST['bpsf_type'] ) ) {
 			$args['type'] = $_POST['bpsf_type'];
 
 			if( 'online' == $args['type'] )
-				$fallback_message = '<p>'.__('No online friends!','bp-show-friends').'</p>';
+				$fallback_message = '<p>'.__('No online friends to show yet.','bp-show-friends').'</p>';
 		}
 
 		$avatar_args = apply_filters( 'bp_show_friends_avatar_args', 
