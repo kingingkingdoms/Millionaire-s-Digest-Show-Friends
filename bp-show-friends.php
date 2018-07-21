@@ -215,7 +215,8 @@ class BP_Show_Friends_Widget extends WP_Widget{
 	 * @uses BP_Show_Friends_Widget->list_friends() to output the user's friends
 	 */
 	public function widget( $args = array(), $instance = array() ) {
-
+		
+		$name = bp_get_user_firstname( bp_get_displayed_user_fullname() );
 		$user_id = false;
 		$user_id = bp_is_user() ? bp_displayed_user_id() : bp_loggedin_user_id() ;
 
@@ -226,7 +227,7 @@ class BP_Show_Friends_Widget extends WP_Widget{
 
 		$instance['per_page'] = !empty( $instance['per_page'] ) ? $instance['per_page'] : 5;
 		$instance['size'] = !empty( $instance['size'] ) ? $instance['size'] : 50;
-		$name = bp_get_user_firstname( bp_get_displayed_user_fullname() );
+		
 		?>
 
 		<?php if( bp_is_user() || is_user_logged_in() ):
@@ -237,14 +238,16 @@ class BP_Show_Friends_Widget extends WP_Widget{
 			if( bp_is_my_profile() ) 
 				printf( __( 'My Friends', 'bp-show-friends' ) );
 			else 
-				printf( __( 'My Friends', 'bp-show-friends' ), $name );
+				printf( __( '%s\'s Friends', 'bp-show-friends' ), bp_get_user_firstname( bp_get_displayed_user_fullname() ) );
 		    
 		    echo $after_title; ?>
 
 			<div class="item-options bpsf-list-options">
-				<a href="#" class="bp-show-friends-action current"  data-type="active" data-number="<?php echo intval( $this->number ) ;?>"><?php _e('Active','bp-show-friends');?></a>&nbsp;|&nbsp;
-				<a href="#" class="bp-show-friends-action"  data-type="newest" data-number="<?php echo intval( $this->number ) ;?>"><?php _e('New','bp-show-friends');?></a>&nbsp;|&nbsp;
-				<a href="#" class="bp-show-friends-action"  data-type="online" data-number="<?php echo intval( $this->number ) ;?>"><?php _e('Online','bp-show-friends');?></a>
+				<a href="#" class="bp-show-friends-action active"  data-type="active" data-number="<?php echo intval( $this->number );?>"><?php _e('Active','bp-show-friends');?></a>
+				<a class="bp-show-friends-divider-one"><?php _e(' | ','bp-show-friends');?></a>
+				<a href="#" class="bp-show-friends-action newest"  data-type="newest" data-number="<?php echo intval( $this->number );?>"><?php _e('Newest','bp-show-friends');?></a>
+				<a class="bp-show-friends-divider-two"><?php _e(' | ','bp-show-friends');?></a>
+				<a href="#" class="bp-show-friends-action mutual"  data-type="mutual" data-number="<?php echo intval( $this->number );?>"><?php _e('Mutual','bp-show-friends');?></a>
 			</div>
 
 			<?php $this->list_friends( $instance['per_page'], $instance['size'] );
@@ -254,7 +257,7 @@ class BP_Show_Friends_Widget extends WP_Widget{
 	}
 
 	/**
-	 * Outputs the list of friends (active or online)
+	 * Outputs the list of friends (active, newest, or mutual)
 	 * 
 	 * @package BP_Show_Friends_Widget
 	 * @since    2.0
@@ -266,6 +269,7 @@ class BP_Show_Friends_Widget extends WP_Widget{
 	 * @uses the Members loop
 	 */
 	public function list_friends( $limit = 0, $size = 0 ) {
+		$name = bp_get_user_firstname( bp_get_displayed_user_fullname() );
 		$user_id = bp_is_user() ? bp_displayed_user_id() : bp_loggedin_user_id();
 
 		if( empty( $limit ) || empty( $size ) ) {
@@ -286,20 +290,16 @@ class BP_Show_Friends_Widget extends WP_Widget{
 			)
 		);
 
-		$fallback_message = '<p>'.__('No friends to show yet.','bp-show-friends').'</p>';
-		
+		$fallback_message = '<p class="bp-show-friends-message">' . $name . __(' does not have any friends to show yet.','bp-show-friends').'</p>';
+
 		if( !empty( $_POST['bpsf_type'] ) ) {
 			$args['type'] = $_POST['bpsf_type'];
 
 			if( 'newest' == $args['type'] )
-				$fallback_message = '<p>'.__('No new friends to show yet.','bp-show-friends').'</p>';
-		}
-
-		if( !empty( $_POST['bpsf_type'] ) ) {
-			$args['type'] = $_POST['bpsf_type'];
-
-			if( 'online' == $args['type'] )
-				$fallback_message = '<p>'.__('No online friends to show yet.','bp-show-friends').'</p>';
+				$fallback_message = '<p class="bp-show-friends-message">' . $name . __( ' does not have any new friends to show yet.', 'bp-show-friends' ) . '</p>';
+			
+			if( 'mutual' == $args['type'] )
+				$fallback_message = '<p class="bp-show-friends-message">' . __('You and ', 'bp-show-friends' ) . $name . __(' do not have any mutual friends in common yet.', 'bp-show-friends' ) . '</p>';
 		}
 
 		$avatar_args = apply_filters( 'bp_show_friends_avatar_args', 
